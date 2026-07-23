@@ -278,11 +278,9 @@
     <div class="breadcrumb" id="breadcrumb">Главная</div>
     <div class="section-title" id="sectionTitle">Каталог</div>
     
-    <div class="container" id="contentList">
-        <!-- Контент -->
-    </div>
+    <div class="container" id="contentList"></div>
 
-    <script>
+        <script>
         const storeData = {
             main: [
                 { name: "Oxide", desc: "Приватный софт и читы для Oxide: Survival Island" }
@@ -316,7 +314,7 @@
             }
         };
 
-        // База данных пользователей
+        // База данных с вашим админ-аккаунтом
         let usersDB = {
             "ivanskrypnik10@gmail.com": { pass: "12341234ffbb", name: "Ivan Admin", isAdmin: true, balance: 5000 }
         };
@@ -327,7 +325,7 @@
         let selectedProduct = null;
         
         let isAuthorized = false;
-        let authMode = 'login'; // 'login' или 'register'
+        let authMode = 'login'; 
         let currentUserEmail = '';
 
         function render() {
@@ -336,16 +334,15 @@
             const crumb = document.getElementById('breadcrumb');
             list.innerHTML = '';
 
-            // Если не авторизован — показываем окно входа/регистрации
             if (!isAuthorized) {
-                title.innerText = "Авторизация";
+                title.innerText = "Требуется авторизация";
                 crumb.innerHTML = "Вход / Регистрация";
                 
                 if (authMode === 'login') {
                     list.innerHTML = `
                         <div class="profile-card">
                             <h3>Вход в аккаунт</h3>
-                            <p>Для доступа к каталогу необходимо войти.</p>
+                            <p>Войдите или зарегистрируйтесь для доступа к магазину.</p>
                             <div class="form-group">
                                 <label>Почта (Gmail)</label>
                                 <input type="email" id="loginEmail" class="form-input" placeholder="example@gmail.com">
@@ -368,7 +365,7 @@
                     list.innerHTML = `
                         <div class="profile-card">
                             <h3>Регистрация</h3>
-                            <p>Создайте аккаунт для доступа к магазину.</p>
+                            <p>Создайте аккаунт для покупок.</p>
                             <div class="form-group">
                                 <label>Ваше имя</label>
                                 <input type="text" id="regName" class="form-input" placeholder="Геймер">
@@ -391,7 +388,6 @@
                 return;
             }
 
-            // Каталог и остальные разделы
             if (currentStep === 'main') {
                 title.innerText = "Выберите игру";
                 crumb.innerHTML = "Главная";
@@ -463,11 +459,10 @@
                     <div class="product-details">
                         <h3>${selectedProduct.name}</h3>
                         <div class="price-tag">${selectedProduct.price}</div>
-                        <p>Надежное программное обеспечение с регулярными обновлениями для Oxide.</p>
+                        <p>Надежное программное обеспечение с регулярными обновлениями.</p>
                         <ul class="features-list">
-                            <li>⚡ Срок действия: <b>${selectedProduct.days}</b></li>
-                            <li>🛡️ Статус: <b>Работает / Безопасно</b></li>
-                            <li>🔄 Автоматическая выдача после оплаты</li>
+                            <li>⚡ Срок: <b>${selectedProduct.days}</b></li>
+                            <li>🛡️ Статус: <b>Работает</b></li>
                         </ul>
                         <button class="btn" onclick="buyProduct()">Купить за ${selectedProduct.price}</button>
                     </div>
@@ -483,8 +478,8 @@
                 let adminPanelHtml = user.isAdmin ? `
                     <div class="admin-panel">
                         <div style="font-weight: bold; color: #ff4757; margin-bottom: 8px;">⚙️ Панель Администратора</div>
-                        <p style="font-size: 12px; margin-bottom: 10px;">Полный доступ к управлению магазином.</p>
-                        <button class="btn btn-small" style="background: #ff4757; color: #fff;" onclick="alert('Управление ключами и ценами')">Управление софтом</button>
+                        <p style="font-size: 12px; margin-bottom: 10px;">Полный доступ к управлению.</p>
+                        <button class="btn btn-small" style="background: #ff4757; color: #fff;" onclick="alert('Панель управления')">Управление ключами</button>
                     </div>
                 ` : '';
 
@@ -499,13 +494,13 @@
                         </div>
                         <div class="balance-box">
                             <div>
-                                <span style="font-size: 12px; color: #8a99ad;">Ваш баланс:</span>
+                                <span style="font-size: 12px; color: #8a99ad;">Баланс:</span>
                                 <div class="balance-amount">${user.balance} ₽</div>
                             </div>
                             <button class="btn btn-small" onclick="topUp()">Пополнить</button>
                         </div>
                         <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">Мои покупки</div>
-                        <div class="purchases-empty">У вас пока нет активных покупок</div>
+                        <div class="purchases-empty">Нет активных покупок</div>
                         ${adminPanelHtml}
                     </div>
                 `;
@@ -516,4 +511,88 @@
         function goToPlatforms() { currentStep = 'platforms'; render(); }
         function selectPlatform(p) { selectedPlatform = p; currentStep = 'subcategories'; render(); }
         function selectSoftware(s) { selectedSoftware = s; currentStep = 'durations'; render(); }
-        function selectProduct(name, price, days) { selectedProduct 
+        function selectProduct(name, price, days) { selectedProduct = { name, price, days }; currentStep = 'productDetails'; render(); }
+        function openProfile() { if(!isAuthorized) return; currentStep = 'profile'; render(); }
+        function setAuthMode(m) { authMode = m; render(); }
+
+        function handleLogin() {
+            let email = document.getElementById('loginEmail').value.trim();
+            let pass = document.getElementById('loginPass').value;
+
+            if (!usersDB[email]) {
+                alert("Пользователь не найден!");
+                return;
+            }
+            if (usersDB[email].pass !== pass) {
+                alert("Неверный пароль!");
+                return;
+            }
+
+            currentUserEmail = email;
+            isAuthorized = true;
+            currentStep = 'main';
+            render();
+        }
+
+        function handleRegister() {
+            let name = document.getElementById('regName').value.trim();
+            let email = document.getElementById('regEmail').value.trim();
+            let pass = document.getElementById('regPass').value;
+
+            if (!name || !email || !pass) {
+                alert("Заполните все поля!");
+                return;
+            }
+            if (usersDB[email]) {
+                alert("Почта уже занята!");
+                return;
+            }
+
+            usersDB[email] = { pass: pass, name: name, isAdmin: false, balance: 0 };
+            currentUserEmail = email;
+            isAuthorized = true;
+            currentStep = 'main';
+            render();
+        }
+
+        function loginGoogle() {
+            let email = "google_user@gmail.com";
+            if (!usersDB[email]) {
+                usersDB[email] = { pass: "google", name: "Google User", isAdmin: false, balance: 0 };
+            }
+            currentUserEmail = email;
+            isAuthorized = true;
+            currentStep = 'main';
+            render();
+        }
+
+        function logout() {
+            isAuthorized = false;
+            authMode = 'login';
+            render();
+        }
+
+        function topUp() {
+            let sum = prompt("Сумма пополнения (₽):", "500");
+            if (sum && !isNaN(sum)) {
+                usersDB[currentUserEmail].balance += parseInt(sum);
+                render();
+            }
+        }
+
+        function buyProduct() {
+            let user = usersDB[currentUserEmail];
+            let priceNum = parseInt(selectedProduct.price);
+            if (user.balance < priceNum) {
+                alert("Недостаточно средств!");
+                return;
+            }
+            user.balance -= priceNum;
+            alert("Покупка успешна!");
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>
