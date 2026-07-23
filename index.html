@@ -279,7 +279,7 @@
     <div class="section-title" id="sectionTitle">Каталог</div>
     
     <div class="container" id="contentList">
-        <!-- Динамический контент -->
+        <!-- Контент -->
     </div>
 
     <script>
@@ -316,7 +316,7 @@
             }
         };
 
-        // База пользователей (хранит пароли и статусы)
+        // База данных пользователей
         let usersDB = {
             "ivanskrypnik10@gmail.com": { pass: "12341234ffbb", name: "Ivan Admin", isAdmin: true, balance: 5000 }
         };
@@ -336,16 +336,16 @@
             const crumb = document.getElementById('breadcrumb');
             list.innerHTML = '';
 
-            // Если не авторизован — принудительно показываем экран входа/регистрации
+            // Если не авторизован — показываем окно входа/регистрации
             if (!isAuthorized) {
-                title.innerText = "Требуется авторизация";
-                crumb.innerHTML = "Авторизация";
+                title.innerText = "Авторизация";
+                crumb.innerHTML = "Вход / Регистрация";
                 
                 if (authMode === 'login') {
                     list.innerHTML = `
                         <div class="profile-card">
                             <h3>Вход в аккаунт</h3>
-                            <p>Чтобы пользоваться магазином, войдите или зарегистрируйтесь.</p>
+                            <p>Для доступа к каталогу необходимо войти.</p>
                             <div class="form-group">
                                 <label>Почта (Gmail)</label>
                                 <input type="email" id="loginEmail" class="form-input" placeholder="example@gmail.com">
@@ -368,7 +368,7 @@
                     list.innerHTML = `
                         <div class="profile-card">
                             <h3>Регистрация</h3>
-                            <p>Создайте аккаунт для доступа к покупкам.</p>
+                            <p>Создайте аккаунт для доступа к магазину.</p>
                             <div class="form-group">
                                 <label>Ваше имя</label>
                                 <input type="text" id="regName" class="form-input" placeholder="Геймер">
@@ -391,7 +391,7 @@
                 return;
             }
 
-            // Обычные разделы сайта, если авторизован
+            // Каталог и остальные разделы
             if (currentStep === 'main') {
                 title.innerText = "Выберите игру";
                 crumb.innerHTML = "Главная";
@@ -483,8 +483,8 @@
                 let adminPanelHtml = user.isAdmin ? `
                     <div class="admin-panel">
                         <div style="font-weight: bold; color: #ff4757; margin-bottom: 8px;">⚙️ Панель Администратора</div>
-                        <p style="font-size: 12px; margin-bottom: 10px;">У вас полный доступ к управлению ценами и пользователями.</p>
-                        <button class="btn btn-small" style="background: #ff4757; color: #fff;" onclick="alert('Функция управления магазином')">Управление ключами</button>
+                        <p style="font-size: 12px; margin-bottom: 10px;">Полный доступ к управлению магазином.</p>
+                        <button class="btn btn-small" style="background: #ff4757; color: #fff;" onclick="alert('Управление ключами и ценами')">Управление софтом</button>
                     </div>
                 ` : '';
 
@@ -515,4 +515,5 @@
         function goToMain() { currentStep = 'main'; render(); }
         function goToPlatforms() { currentStep = 'platforms'; render(); }
         function selectPlatform(p) { selectedPlatform = p; currentStep = 'subcategories'; render(); }
-        function selectSoftware(s) { selectedSoftware = s; cur
+        function selectSoftware(s) { selectedSoftware = s; currentStep = 'durations'; render(); }
+        function selectProduct(name, price, days) { selectedProduct 
