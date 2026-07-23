@@ -37,7 +37,11 @@
         }
         .online-status {
             font-size: 13px;
-            color: #8a99ad;
+            color: #00d2ff;
+            background: rgba(0, 210, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
         }
         .profile-btn {
             background: #252a34;
@@ -158,6 +162,23 @@
             font-weight: bold;
             color: #00d2ff;
         }
+        .purchase-item {
+            background: #12151c;
+            border: 1px solid #252a34;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .purchase-item .key {
+            color: #00d2ff;
+            font-family: monospace;
+            background: #0f1115;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 13px;
+        }
         .purchases-empty {
             text-align: center;
             color: #8a99ad;
@@ -189,6 +210,10 @@
         }
         .form-input:focus {
             border-color: #00d2ff;
+        }
+        textarea.form-input {
+            resize: vertical;
+            height: 80px;
         }
         .auth-switch {
             text-align: center;
@@ -247,6 +272,24 @@
             border-radius: 10px;
             margin-top: 20px;
         }
+        .reviews-section {
+            margin-top: 20px;
+            border-top: 1px solid #252a34;
+            padding-top: 15px;
+        }
+        .review-card {
+            background: #12151c;
+            border: 1px solid #252a34;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .review-author {
+            color: #00d2ff;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
         .divider {
             display: flex;
             align-items: center;
@@ -270,7 +313,7 @@
     <header>
         <div class="logo" onclick="goToMain()">OXIDE STORE</div>
         <div class="header-right">
-            <div class="online-status">Онлайн: 64</div>
+            <div class="online-status">Онлайн: <span id="onlineCount">64</span></div>
             <button class="profile-btn" onclick="openProfile()">Профиль</button>
         </div>
     </header>
@@ -314,9 +357,28 @@
             }
         };
 
-        // База данных с вашим админ-аккаунтом
+        // База данных пользователей
         let usersDB = {
-            "ivanskrypnik10@gmail.com": { pass: "12341234ffbb", name: "Ivan Admin", isAdmin: true, balance: 5000 }
+            "ivanskrypnik10@gmail.com": { 
+                pass: "12341234ffbb", 
+                name: "Ivan Admin", 
+                isAdmin: true, 
+                balance: 5000, 
+                purchases: [] 
+            }
+        };
+
+        // База отзывов для товаров
+        let reviewsDB = {
+            "Magic Vip": [
+                { author: "Игрок_99", text: "Софт топ, все работает идеально!" }
+            ],
+            "Magic Lite": [
+                { author: "Скелет", text: "Не лагает, для своей цены огонь." }
+            ],
+            "Ultima": [
+                { author: "AppleUser", text: "На айфоне летает, бана нет." }
+            ]
         };
 
         let currentStep = 'main';
@@ -327,6 +389,18 @@
         let isAuthorized = false;
         let authMode = 'login'; 
         let currentUserEmail = '';
+
+        // Живой онлайн в реальном времени
+        setInterval(() => {
+            let el = document.getElementById('onlineCount');
+            if (el) {
+                let current = parseInt(el.innerText);
+                let change = Math.floor(Math.random() * 5) - 2; // колебание от -2 до +2
+                let newVal = current + change;
+                if (newVal < 45) newVal = 48;
+                el.innerText = newVal;
+            }
+        }, 4000);
 
         function render() {
             const list = document.getElementById('contentList');
@@ -342,7 +416,7 @@
                     list.innerHTML = `
                         <div class="profile-card">
                             <h3>Вход в аккаунт</h3>
-                            <p>Войдите или зарегистрируйтесь для доступа к магазину.</p>
+                            <p>Войдите для доступа к магазину и покупкам.</p>
                             <div class="form-group">
                                 <label>Почта (Gmail)</label>
                                 <input type="email" id="loginEmail" class="form-input" placeholder="example@gmail.com">
@@ -455,16 +529,44 @@
             else if (currentStep === 'productDetails') {
                 title.innerText = "Информация о товаре";
                 crumb.innerHTML = `<span onclick="goToMain()">Главная</span> / Детали`;
+                
+                // Собираем отзывы для текущего софта
+                let revsHtml = '';
+                let softKey = selectedSoftware;
+                if(reviewsDB[softKey]) {
+                    reviewsDB[softKey].forEach(r => {
+                        revsHtml += `
+                            <div class="review-card">
+                                <div class="review-author">${r.author}</div>
+                                <div>${r.text}</div>
+                            </div>
+                        `;
+                    });
+                }
+                if(!revsHtml) revsHtml = '<div style="color: #8a99ad; font-size: 13px;">Пока нет отзывов. Будьте первыми!</div>';
+
                 list.innerHTML = `
                     <div class="product-details">
                         <h3>${selectedProduct.name}</h3>
                         <div class="price-tag">${selectedProduct.price}</div>
-                        <p>Надежное программное обеспечение с регулярными обновлениями.</p>
+                        <p>Надежное программное обеспечение с регулярными обновлениями для Oxide.</p>
                         <ul class="features-list">
                             <li>⚡ Срок: <b>${selectedProduct.days}</b></li>
-                            <li>🛡️ Статус: <b>Работает</b></li>
+                            <li>🛡️ Статус: <b>Работает / Безопасно</b></li>
                         </ul>
                         <button class="btn" onclick="buyProduct()">Купить за ${selectedProduct.price}</button>
+                        
+                        <div class="reviews-section">
+                            <div style="font-weight: bold; margin-bottom: 10px; font-size: 15px;">Отзывы покупателей</div>
+                            <div id="reviewsList">${revsHtml}</div>
+                            
+                            <div style="margin-top: 15px;">
+                                <div class="form-group">
+                                    <textarea id="newReviewText" class="form-input" placeholder="Напишите ваш отзыв..."></textarea>
+                                </div>
+                                <button class="btn btn-small" onclick="submitReview()">Оставить отзыв</button>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -475,11 +577,26 @@
                 let user = usersDB[currentUserEmail];
                 let adminBadge = user.isAdmin ? `<span class="admin-badge">Админ</span>` : '';
                 
+                let purchasesHtml = '';
+                if (user.purchases && user.purchases.length > 0) {
+                    user.purchases.forEach(p => {
+                        purchasesHtml += `
+                            <div class="purchase-item">
+                                <div style="font-weight: bold; font-size: 14px;">${p.name}</div>
+                                <div style="font-size: 12px; color: #8a99ad; margin-top: 2px;">Дата: ${p.date}</div>
+                                <div class="key">Ключ: ${p.key}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    purchasesHtml = `<div class="purchases-empty">У вас пока нет активных покупок</div>`;
+                }
+                
                 let adminPanelHtml = user.isAdmin ? `
                     <div class="admin-panel">
                         <div style="font-weight: bold; color: #ff4757; margin-bottom: 8px;">⚙️ Панель Администратора</div>
                         <p style="font-size: 12px; margin-bottom: 10px;">Полный доступ к управлению.</p>
-                        <button class="btn btn-small" style="background: #ff4757; color: #fff;" onclick="alert('Панель управления')">Управление ключами</button>
+                        <button class="btn btn-small" style="background: #ff4757; color: #fff;" onclick="alert('Управление софтом и ценами активно')">Управление ключами</button>
                     </div>
                 ` : '';
 
@@ -499,8 +616,8 @@
                             </div>
                             <button class="btn btn-small" onclick="topUp()">Пополнить</button>
                         </div>
-                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">Мои покупки</div>
-                        <div class="purchases-empty">Нет активных покупок</div>
+                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">История покупок</div>
+                        ${purchasesHtml}
                         ${adminPanelHtml}
                     </div>
                 `;
@@ -548,7 +665,7 @@
                 return;
             }
 
-            usersDB[email] = { pass: pass, name: name, isAdmin: false, balance: 0 };
+            usersDB[email] = { pass: pass, name: name, isAdmin: false, balance: 0, purchases: [] };
             currentUserEmail = email;
             isAuthorized = true;
             currentStep = 'main';
@@ -558,7 +675,7 @@
         function loginGoogle() {
             let email = "google_user@gmail.com";
             if (!usersDB[email]) {
-                usersDB[email] = { pass: "google", name: "Google User", isAdmin: false, balance: 0 };
+                usersDB[email] = { pass: "google", name: "Google User", isAdmin: false, balance: 0, purchases: [] };
             }
             currentUserEmail = email;
             isAuthorized = true;
@@ -576,6 +693,7 @@
             let sum = prompt("Сумма пополнения (₽):", "500");
             if (sum && !isNaN(sum)) {
                 usersDB[currentUserEmail].balance += parseInt(sum);
+                alert("Баланс успешно пополнен!");
                 render();
             }
         }
@@ -584,15 +702,51 @@
             let user = usersDB[currentUserEmail];
             let priceNum = parseInt(selectedProduct.price);
             if (user.balance < priceNum) {
-                alert("Недостаточно средств!");
+                alert("Недостаточно средств на балансе!");
                 return;
             }
+            
             user.balance -= priceNum;
-            alert("Покупка успешна!");
-            render();
+            
+            // Генерация случайного рабочего ключа
+            let randomKey = 'OXIDE-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            let currentDate = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            if(!user.purchases) user.purchases = [];
+            user.purchases.unshift({
+                name: selectedProduct.name,
+                price: selectedProduct.price,
+                key: randomKey,
+                date: currentDate
+            });
+
+            alert(`Покупка успешна! Ваш ключ: ${randomKey}`);
+            openProfile();
+        }
+
+        function submitReview() {
+            let text = document.getElementById('newReviewText').value.trim();
+            if(!text) {
+                alert("Напишите текст отзыва!");
+                return;
+            }
+            let user = usersDB[currentUserEmail];
+            let softKey = selectedSoftware;
+
+            if(!reviewsDB[softKey]) reviewsDB[softKey] = [];
+            reviewsDB[softKey].unshift({
+                author: user.name,
+                text: text
+            });
+
+            document.getElementById('newReviewText').value = '';
+            alert("Отзыв успешно добавлен!");
+            selectProduct(selectedProduct.name, selectedProduct.price, selectedProduct.days);
         }
 
         render();
     </script>
 </body>
 </html>
+
+    
