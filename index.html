@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oxide Store - Магазин софта</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background-color: #0f1115;
+            color: #ffffff;
+            padding-bottom: 40px;
+        }
+        header {
+            background: #161920;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #252a34;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00d2ff;
+            cursor: pointer;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .online-status {
+            font-size: 13px;
+            color: #8a99ad;
+        }
+        .profile-btn {
+            background: #252a34;
+            color: #00d2ff;
+            border: 1px solid #353b48;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .breadcrumb {
+            padding: 12px 15px;
+            font-size: 13px;
+            color: #8a99ad;
+            background: #12151c;
+            border-bottom: 1px solid #252a34;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .breadcrumb span {
+            color: #00d2ff;
+            cursor: pointer;
+        }
+        .section-title {
+            font-size: 18px;
+            margin: 20px 15px 10px;
+            font-weight: 600;
+        }
+        .container {
+            padding: 0 15px;
+        }
+        .card-item {
+            background: #161920;
+            border: 1px solid #252a34;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .card-item:active {
+            background: #1c212c;
+        }
+        .card-info h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .card-info span {
+            font-size: 12px;
+            color: #8a99ad;
+        }
+        .card-price {
+            font-weight: bold;
+            color: #00d2ff;
+            font-size: 15px;
+        }
+        .product-details, .profile-card {
+            background: #161920;
+            border: 1px solid #252a34;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 15px;
+        }
+        .product-details h3, .profile-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .price-tag {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00d2ff;
+            margin-bottom: 15px;
+        }
+        .product-details p, .profile-card p {
+            font-size: 14px;
+            color: #8a99ad;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .features-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        .features-list li {
+            font-size: 13px;
+            color: #ccc;
+            padding: 6px 0;
+            border-bottom: 1px solid #222834;
+        }
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #252a34;
+        }
+        .balance-box {
+            background: #12151c;
+            border: 1px solid #252a34;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .balance-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00d2ff;
+        }
+        .purchases-empty {
+            text-align: center;
+            color: #8a99ad;
+            font-size: 13px;
+            padding: 20px 0;
+            background: #12151c;
+            border-radius: 8px;
+            border: 1px dashed #252a34;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #8a99ad;
+            margin-bottom: 5px;
+        }
+        .form-input {
+            width: 100%;
+            background: #12151c;
+            border: 1px solid #252a34;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: #00d2ff;
+        }
+        .auth-switch {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #8a99ad;
+        }
+        .auth-switch span {
+            color: #00d2ff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            background: #00d2ff;
+            color: #000;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            width: 100%;
+            text-align: center;
+        }
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: auto;
+        }
+        .google-btn {
+            background: #ffffff;
+            color: #111111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .admin-badge {
+            background: #ff4757;
+            color: #fff;
+            padding: 2px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        .admin-panel {
+            background: #221a22;
+            border: 1px solid #ff4757;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 15px 0;
+            color: #8a99ad;
+            font-size: 12px;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #252a34;
+        }
+        .divider::before { margin-right: 10px; }
+        .divider::after { margin-left: 10px; }
+        .btn:active { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="goToMain()">OXIDE STORE</div>
+        <div class="header-right">
+            <div class="online-status">Онлайн: 64</div>
+            <button class="profile-btn" onclick="openProfile()">Профиль</button>
+        </div>
+    </header>
+
+    <div class="breadcrumb" id="breadcrumb">Главная</div>
+    <div class="section-title" id="sectionTitle">Каталог</div>
+    
+    <div class="container" id="contentList">
+        <!-- Динамический контент -->
+    </div>
+
+    <script>
+        const storeData = {
+            main: [
+                { name: "Oxide", desc: "Приватный софт и читы для Oxide: Survival Island" }
+            ],
+            platforms: [
+                { name: "Android Non root", desc: "Без получения прав суперпользователя" },
+                { name: "iOS", desc: "Для устройств Apple" }
+            ],
+            androidSub: [
+                { name: "Magic Vip", desc: "Максимальный функционал и обход" },
+                { name: "Magic Lite", desc: "Оптимальная и легкая версия" }
+            ],
+            iosSub: [
+                { name: "Ultima", desc: "Премиум решение для iOS" }
+            ],
+            durations: {
+                "Magic Vip": [
+                    { name: "Magic Vip [1 день]", price: "280 ₽", days: "1 день" },
+                    { name: "Magic Vip [7 дней]", price: "1500 ₽", days: "7 дней" },
+                    { name: "Magic Vip [14 дней]", price: "2500 ₽", days: "14 дней" }
+                ],
+                "Magic Lite": [
+                    { name: "Magic Lite [1 день]", price: "180 ₽", days: "1 день" },
+                    { name: "Magic Lite [7 дней]", price: "1100 ₽", days: "7 дней" },
+                    { name: "Magic Lite [14 дней]", price: "1600 ₽", days: "14 дней" }
+                ],
+                "Ultima": [
+                    { name: "Ultima [1 день]", price: "250 ₽", days: "1 день" },
+                    { name: "Ultima [7 дней]", price: "1000 ₽", days: "7 дней" }
+                ]
+            }
+        };
+
+        // База пользователей (хранит пароли и статусы)
+        let usersDB = {
+            "ivanskrypnik10@gmail.com": { pass: "12341234ffbb", name: "Ivan Admin", isAdmin: true, balance: 5000 }
+        };
+
+        let currentStep = 'main';
+        let selectedPlatform = '';
+        let selectedSoftware = '';
+        let selectedProduct = null;
+        
+        let isAuthorized = false;
+        let authMode = 'login'; // 'login' или 'register'
+        let currentUserEmail = '';
+
+        function render() {
+            const list = document.getElementById('contentList');
+            const title = document.getElementById('sectionTitle');
+            const crumb = document.getElementById('breadcrumb');
+            list.innerHTML = '';
+
+            // Если не авторизован — принудительно показываем экран входа/регистрации
+            if (!isAuthorized) {
+                title.innerText = "Требуется авторизация";
+                crumb.innerHTML = "Авторизация";
+                
+                if (authMode === 'login') {
+                    list.innerHTML = `
+                        <div class="profile-card">
+                            <h3>Вход в аккаунт</h3>
+                            <p>Чтобы пользоваться магазином, войдите или зарегистрируйтесь.</p>
+                            <div class="form-group">
+                                <label>Почта (Gmail)</label>
+                                <input type="email" id="loginEmail" class="form-input" placeholder="example@gmail.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Пароль</label>
+                                <input type="password" id="loginPass" class="form-input" placeholder="••••••••">
+                            </div>
+                            <button class="btn" onclick="handleLogin()">Войти</button>
+                            
+                            <div class="divider">или</div>
+                            <button class="btn google-btn" onclick="loginGoogle()">Войти через Google</button>
+
+                            <div class="auth-switch">
+                                Нет аккаунта? <span onclick="setAuthMode('register')">Зарегистрироваться</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    list.innerHTML = `
+                        <div class="profile-card">
+                            <h3>Регистрация</h3>
+                            <p>Создайте аккаунт для доступа к покупкам.</p>
+                            <div class="form-group">
+                                <label>Ваше имя</label>
+                                <input type="text" id="regName" class="form-input" placeholder="Геймер">
+                            </div>
+                            <div class="form-group">
+                                <label>Почта (Gmail)</label>
+                                <input type="email" id="regEmail" class="form-input" placeholder="example@gmail.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Пароль</label>
+                                <input type="password" id="regPass" class="form-input" placeholder="••••••••">
+                            </div>
+                            <button class="btn" onclick="handleRegister()">Зарегистрироваться</button>
+                            <div class="auth-switch">
+                                Уже есть аккаунт? <span onclick="setAuthMode('login')">Войти</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            // Обычные разделы сайта, если авторизован
+            if (currentStep === 'main') {
+                title.innerText = "Выберите игру";
+                crumb.innerHTML = "Главная";
+                storeData.main.forEach(item => {
+                    list.innerHTML += `
+                        <div class="card-item" onclick="goToPlatforms()">
+                            <div class="card-info">
+                                <h4>${item.name}</h4>
+                                <span>${item.desc}</span>
+                            </div>
+                            <div class="card-price">➜</div>
+                        </div>
+                    `;
+                });
+            } 
+            else if (currentStep === 'platforms') {
+                title.innerText = "Выберите платформу";
+                crumb.innerHTML = `<span onclick="goToMain()">Главная</span> / Oxide`;
+                storeData.platforms.forEach(item => {
+                    list.innerHTML += `
+                        <div class="card-item" onclick="selectPlatform('${item.name}')">
+                            <div class="card-info">
+                                <h4>${item.name}</h4>
+                                <span>${item.desc}</span>
+                            </div>
+                            <div class="card-price">➜</div>
+                        </div>
+                    `;
+                });
+            }
+            else if (currentStep === 'subcategories') {
+                title.innerText = selectedPlatform === "Android Non root" ? "Android Non Root софт" : "iOS софт";
+                crumb.innerHTML = `<span onclick="goToMain()">Главная</span> / <span onclick="goToPlatforms()">Oxide</span> / ${selectedPlatform}`;
+                
+                let items = selectedPlatform === "Android Non root" ? storeData.androidSub : storeData.iosSub;
+                items.forEach(item => {
+                    list.innerHTML += `
+                        <div class="card-item" onclick="selectSoftware('${item.name}')">
+                            <div class="card-info">
+                                <h4>${item.name}</h4>
+                                <span>${item.desc}</span>
+                            </div>
+                            <div class="card-price">➜</div>
+                        </div>
+                    `;
+                });
+            }
+            else if (currentStep === 'durations') {
+                title.innerText = `Выберите срок (${selectedSoftware})`;
+                crumb.innerHTML = `<span onclick="goToMain()">Главная</span> / <span onclick="goToPlatforms()">Oxide</span> / <span onclick="selectPlatform('${selectedPlatform}')">${selectedPlatform}</span> / ${selectedSoftware}`;
+                
+                let variants = storeData.durations[selectedSoftware];
+                variants.forEach(v => {
+                    list.innerHTML += `
+                        <div class="card-item" onclick="selectProduct('${v.name}', '${v.price}', '${v.days}')">
+                            <div class="card-info">
+                                <h4>${v.name}</h4>
+                                <span>Мгновенная выдача ключа</span>
+                            </div>
+                            <div class="card-price">${v.price}</div>
+                        </div>
+                    `;
+                });
+            }
+            else if (currentStep === 'productDetails') {
+                title.innerText = "Информация о товаре";
+                crumb.innerHTML = `<span onclick="goToMain()">Главная</span> / Детали`;
+                list.innerHTML = `
+                    <div class="product-details">
+                        <h3>${selectedProduct.name}</h3>
+                        <div class="price-tag">${selectedProduct.price}</div>
+                        <p>Надежное программное обеспечение с регулярными обновлениями для Oxide.</p>
+                        <ul class="features-list">
+                            <li>⚡ Срок действия: <b>${selectedProduct.days}</b></li>
+                            <li>🛡️ Статус: <b>Работает / Безопасно</b></li>
+                            <li>🔄 Автоматическая выдача после оплаты</li>
+                        </ul>
+                        <button class="btn" onclick="buyProduct()">Купить за ${selectedProduct.price}</button>
+                    </div>
+                `;
+            }
+            else if (currentStep === 'profile') {
+                title.innerText = "Личный кабинет";
+                crumb.innerHTML = `<span onclick="goToMain()">Главная</span> / Профиль`;
+                
+                let user = usersDB[currentUserEmail];
+                let adminBadge = user.isAdmin ? `<span class="admin-badge">Админ</span>` : '';
+                
+                let adminPanelHtml = user.isAdmin ? `
+                    <div class="admin-panel">
+                        <div style="font-weight: bold; color: #ff4757; margin-bottom: 8px;">⚙️ Панель Администратора</div>
+                        <p style="font-size: 12px; margin-bottom: 10px;">У вас полный доступ к управлению ценами и пользователями.</p>
+                        <button class="btn btn-small" style="background: #ff4757; color: #fff;" onclick="alert('Функция управления магазином')">Управление ключами</button>
+                    </div>
+                ` : '';
+
+                list.innerHTML = `
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div>
+                                <h3>${user.name} ${adminBadge}</h3>
+                                <span style="font-size: 12px; color: #8a99ad;">${currentUserEmail}</span>
+                            </div>
+                            <button class="btn btn-small" onclick="logout()">Выйти</button>
+                        </div>
+                        <div class="balance-box">
+                            <div>
+                                <span style="font-size: 12px; color: #8a99ad;">Ваш баланс:</span>
+                                <div class="balance-amount">${user.balance} ₽</div>
+                            </div>
+                            <button class="btn btn-small" onclick="topUp()">Пополнить</button>
+                        </div>
+                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">Мои покупки</div>
+                        <div class="purchases-empty">У вас пока нет активных покупок</div>
+                        ${adminPanelHtml}
+                    </div>
+                `;
+            }
+        }
+
+        function goToMain() { currentStep = 'main'; render(); }
+        function goToPlatforms() { currentStep = 'platforms'; render(); }
+        function selectPlatform(p) { selectedPlatform = p; currentStep = 'subcategories'; render(); }
+        function selectSoftware(s) { selectedSoftware = s; cur
